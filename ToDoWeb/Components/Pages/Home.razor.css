@@ -1,0 +1,75 @@
+﻿div.tarefa-div {
+    min-height: 2rem;
+    padding: 0.5rem;
+    border-radius: 5px;
+}
+
+.checkbox-container {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+    .checkbox-container input {
+        display: none; /* Oculta o checkbox padrão */
+    }
+
+.custom-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #333; /* Cor da borda do círculo */
+    border-radius: 50%; /* Transforma o elemento em um círculo */
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+.checkbox-container input:checked + .custom-checkbox::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #333;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.btn-outline-clear {
+    color: #6c757d;
+    background-color: transparent;
+    background-image: none;
+    border-color: #6c757d;
+}
+
+.fixed {
+    position: absolute;
+    bottom: 0;
+    right: 1rem;
+    width: calc(100% - 3rem);
+}
+
+.checkbox-isimportant-container {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+.checkbox-isimportant-container input {
+    display: none;
+}
+
+.bi-star-fill,
+.bi-star {
+/*    font-size: 1.5rem;
+    color: #ccc;*/
+}
+
+.bi-star-fill.checked {
+    /*color: gold;*/
+}
+
+.bi-star.unchecked {
+    display: none;
+}
