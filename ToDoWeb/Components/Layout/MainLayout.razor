@@ -1,15 +1,17 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page h-100">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 px-0 sidebar">
+            <NavMenu />
+        </div>
 
-    <main>
-        <article class="content px-4 h-100" style="position: relative;">
-            @Body
-        </article>
-    </main>
+        <main class="col-md-10">
+            <article class="content px-4 h-100" style="position: relative;">
+                @Body
+            </article>
+        </main>
+    </div>
 </div>
 
 <div id="blazor-error-ui">

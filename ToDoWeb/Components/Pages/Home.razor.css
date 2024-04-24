@@ -11,14 +11,14 @@
 }
 
     .checkbox-container input {
-        display: none; /* Oculta o checkbox padrão */
+        display: none;
     }
 
 .custom-checkbox {
     width: 18px;
     height: 18px;
-    border: 2px solid #333; /* Cor da borda do círculo */
-    border-radius: 50%; /* Transforma o elemento em um círculo */
+    border: 2px solid #333;
+    border-radius: 50%;
     position: relative;
     top: 0;
     left: 0;
@@ -72,4 +72,11 @@
 
 .bi-star.unchecked {
     display: none;
+}
+
+@media (max-width: 640.98px) {
+    .fixed {
+        position: fixed;
+    }
+
 }
