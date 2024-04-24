@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using System.Reflection.Metadata
 @inject IJSRuntime JSRuntime
 
 
@@ -6,77 +7,26 @@
 
     <h1><i class="bi bi-house-door"></i> @taskList.Title</h1>
 
-<div class="row g-1">
-    @foreach (var task in taskList.Tasks.Where(x => !x.IsConcluded))
-    {
-        <div class="col-lg-12 tarefa-div border">
-            <div class="d-flex justify-content-between">
-                <div class="d-flex">
-                    <div class="">
-                        <label class="checkbox-container">
-                            <input type="checkbox" name="IsConcluded" id="task-@task.Id" @bind="task.IsConcluded" />
-                            <div class="custom-checkbox"></div>
-                        </label>
-
-                    </div>
-                    <div class="ps-2">
-                        <div>
-                            <label for="task-@task.Id">@task.Title</label>
-                        </div>
-                        <div>
-                            @if (task.DateConclusion?.Date == DateTime.UtcNow.Date)
-                            {
-                                <div>
-                                    <i class="bi bi-brightness-high"></i> Meu dia
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="">
-                    <label class="checkbox-isimportant-container">
-                        <input type="checkbox" name="IsImportant" id="task-@task.Id" @bind="task.IsImportant" />
-                        @if (task.IsImportant)
-                        {
-                            <i class="bi bi-star-fill"></i>
-                        }
-                        else
-                        {
-                            <i class="bi bi-star"></i>
-                        }
-                    </label>
-                </div>
-            </div>
-        </div>
-    }
-</div>
-
-<p class="d-inline-flex gap-1 mt-3">
-    <button class="btn btn-secondary" @onclick="ToggleCollapse" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="@IsExpanded.ToString().ToLower()" aria-controls="collapseExample">
-        <i class="@IconClass"></i> Concluídas @(taskList.CountConcluded)
-    </button>
-</p>
-
-<div class="collapse @(IsExpanded ? "show" : "")" id="collapseExample">
+<div class="overflow-y-scroll">
     <div class="row g-1">
-        @foreach (var task in taskList.Tasks.Where(x => x.IsConcluded))
+        @foreach (var task in taskList.Tasks.Where(x => !x.IsConcluded))
         {
             <div class="col-lg-12 tarefa-div border">
                 <div class="d-flex justify-content-between">
                     <div class="d-flex">
                         <div class="">
                             <label class="checkbox-container">
-                                <input type="checkbox" name="IsConcluded" id="task-@task.Id" @bind="task.IsConcluded" />
+                                <input type="checkbox" name="IsConcluded" id="task-@task.Id" @bind="task.IsConcluded" @onclick="PlaySound" />
+                                <audio id="audioPlayer" src="/Audio/short-success-sound-glockenspiel-treasure-video-game-6346.mp3" hidden></audio>
                                 <div class="custom-checkbox"></div>
                             </label>
-
                         </div>
                         <div class="ps-2">
                             <div>
-                                <label for="task-@task.Id"><del>@task.Title</del></label>
+                                <label for="task-@task.Id">@task.Title</label>
                             </div>
                             <div>
-                                @if (task.DateConclusion == DateTime.UtcNow)
+                                @if (task.DateConclusion?.Date == DateTime.UtcNow.Date)
                                 {
                                     <div>
                                         <i class="bi bi-brightness-high"></i> Meu dia
@@ -102,9 +52,62 @@
             </div>
         }
     </div>
+
+    <p class="d-inline-flex gap-1 mt-3">
+        <button class="btn btn-secondary" @onclick="ToggleCollapse" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="@IsExpanded.ToString().ToLower()" aria-controls="collapseExample">
+            <i class="@IconClass"></i> Concluídas @(taskList.CountConcluded)
+        </button>
+    </p>
+
+    <div class="collapse @(IsExpanded ? "show" : "")" id="collapseExample">
+        <div class="row g-1">
+            @foreach (var task in taskList.Tasks.Where(x => x.IsConcluded))
+            {
+                <div class="col-lg-12 tarefa-div border">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex">
+                            <div class="">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" name="IsConcluded" id="task-@task.Id" @bind="task.IsConcluded" />
+                                    <div class="custom-checkbox"></div>
+                                </label>
+
+                            </div>
+                            <div class="ps-2">
+                                <div>
+                                    <label for="task-@task.Id"><del>@task.Title</del></label>
+                                </div>
+                                <div>
+                                    @if (task.DateConclusion == DateTime.UtcNow)
+                                    {
+                                        <div>
+                                            <i class="bi bi-brightness-high"></i> Meu dia
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <label class="checkbox-isimportant-container">
+                                <input type="checkbox" name="IsImportant" id="task-@task.Id" @bind="task.IsImportant" />
+                                @if (task.IsImportant)
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
-<div class="input-group fixed m-2">
+<div class="input-group fixed pb-4">
     <button class="btn btn-outline-secondary" type="button" @onclick="Add" id="button-addon1"><i class="bi bi-plus-lg"></i></button>
     <input type="text" class="form-control" placeholder="Adicionar nova tarefa"
            aria-label="Example text with button addon" aria-describedby="button-addon1"
@@ -123,39 +126,164 @@
             Id = 1,
             Tasks = new()
         {
-            // new()
-            // {
-            //     Id = 1,
-            //     IsConcluded = false,
-            //     ListId = 1,
-            //     Title = "Conferir CheckList",
-            //     DateConclusion = DateTime.UtcNow,
-            //     IsImportant = false
-            // },
-            // new()
-            // {
-            //     Id = 2,
-            //     IsConcluded = false,
-            //     ListId = 1,
-            //     Title = "Atualizar CheckList",
-            //     IsImportant = false
-            // },
-            // new()
-            // {
-            //     Id = 3,
-            //     IsConcluded = true,
-            //     ListId = 1,
-            //     Title = "Escrever CheckList",
-            //     IsImportant = false
-            // },
-            // new()
-            // {
-            //     Id = 4,
-            //     IsConcluded = true,
-            //     ListId = 1,
-            //     Title = "Limpar CheckList",
-            //     IsImportant = true
-            // }
+            new()
+            {
+                Id = 1,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Conferir CheckList",
+                DateConclusion = DateTime.UtcNow,
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 2,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Atualizar CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 3,
+                IsConcluded = true,
+                ListId = 1,
+                Title = "Escrever CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 1,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Conferir CheckList",
+                DateConclusion = DateTime.UtcNow,
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 2,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Atualizar CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 3,
+                IsConcluded = true,
+                ListId = 1,
+                Title = "Escrever CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 1,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Conferir CheckList",
+                DateConclusion = DateTime.UtcNow,
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 2,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Atualizar CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 3,
+                IsConcluded = true,
+                ListId = 1,
+                Title = "Escrever CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 1,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Conferir CheckList",
+                DateConclusion = DateTime.UtcNow,
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 2,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Atualizar CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 3,
+                IsConcluded = true,
+                ListId = 1,
+                Title = "Escrever CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 1,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Conferir CheckList",
+                DateConclusion = DateTime.UtcNow,
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 2,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Atualizar CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 3,
+                IsConcluded = true,
+                ListId = 1,
+                Title = "Escrever CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 1,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Conferir CheckList",
+                DateConclusion = DateTime.UtcNow,
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 2,
+                IsConcluded = false,
+                ListId = 1,
+                Title = "Atualizar CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 3,
+                IsConcluded = true,
+                ListId = 1,
+                Title = "Escrever CheckList",
+                IsImportant = false
+            },
+            new()
+            {
+                Id = 4,
+                IsConcluded = true,
+                ListId = 1,
+                Title = "Limpar CheckList",
+                IsImportant = true
+            }
 
         }
         };
@@ -184,6 +312,16 @@
         if (e.Key == "Enter")
         {
             Add();
+        }
+    }
+
+    async Task PlaySound()
+    {
+        var audioElement = await JSRuntime.InvokeAsync<IJSObjectReference>("document.getElementById", "audioPlayer");
+
+        if (audioElement != null)
+        {
+            await audioElement.InvokeVoidAsync("play");
         }
     }
 }
